@@ -41,3 +41,11 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ('name', 'children')
+
+
+class CategoryFlatSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Category
+        fields = ('name',)
+

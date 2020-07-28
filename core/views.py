@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.response import Response
 
-from .serializers import CategorySerializer, CategoryRetrieveSerializer
+from .serializers import CategorySerializer, CategoryRetrieveSerializer, CategoryFlatSerializer
 from.models import Category
 
 
@@ -17,20 +17,21 @@ class CategoryCreateViewSet(viewsets.ModelViewSet):
                 for obj in data:
                     for key, val in obj.items():
                         if key == 'name':
-                            if Category.objects.filter(name=obj.get(key)).last():
-                                return Response(json.dumps({key: val}), status=status.HTTP_400_BAD_REQUEST)
-                            sub_category = Category.objects.create(name=obj.get(key),
-                                                                   parent=parent)
-                    if obj.get('children'):
-                        create_nested(obj.get('children'), sub_category)
+                            serializer = CategoryFlatSerializer(data={key: val})
+                            if serializer.is_valid(raise_exception=True):
+                                sub_category = serializer.save()
+                                sub_category.parent = parent
+                                sub_category.save()
+                                if obj.get('children'):
+                                    create_nested(obj.get('children'), sub_category)
 
         for key, val in request.data.items():
             if key == 'name':
-                if Category.objects.filter(name=request.data.get(key)).last():
-                    return Response(json.dumps({key: val}), status=status.HTTP_400_BAD_REQUEST)
-                category = Category.objects.create(name=request.data.get(key))
-                if request.data.get('children'):
-                    create_nested(request.data.get('children'), category)
+                serializer = CategoryFlatSerializer(data={key: val})
+                if serializer.is_valid(raise_exception=True):
+                    category = serializer.save()
+                    if request.data.get('children'):
+                        create_nested(request.data.get('children'), category)
         return Response(status=status.HTTP_201_CREATED)
 
 
