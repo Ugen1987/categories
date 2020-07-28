@@ -31,12 +31,9 @@ class CategoryCreateViewSet(viewsets.ModelViewSet):
                 category = Category.objects.create(name=request.data.get(key))
                 if request.data.get('children'):
                     create_nested(request.data.get('children'), category)
-
-        create_nested(request.data, parent=None)
         return Response(status=status.HTTP_201_CREATED)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategoryRetrieveSerializer
     queryset = Category.objects.all()
-
