@@ -17,6 +17,9 @@ class Product(models.Model):
     brand = models.ForeignKey('Brand', on_delete=models.CASCADE)
     price = models.FloatField()
 
+    def __str__(self):
+        return self.brand.title + ' ' + str(self.price)
+
 
 class Sneaker(Product):
     SUBTYPE_1 = '1'
@@ -36,10 +39,16 @@ class Bag(Product):
 class Brand(models.Model):
     title = models.CharField(max_length=32)
 
+    def __str__(self):
+        return self.title
+
 
 class BrandModel(models.Model):
     title = models.CharField(max_length=32)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
 
 
 class Sale(models.Model):

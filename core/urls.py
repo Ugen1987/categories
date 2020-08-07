@@ -7,4 +7,5 @@ app_name = 'core'
 urlpatterns = [
     path('categories/', views.CategoryCreateViewSet.as_view({'post': 'create'})),
     path('categories/<int:pk>/', views.CategoryViewSet.as_view({'get': 'retrieve'})),
+    path('products/', views.product_list, name='product_list')
 ]

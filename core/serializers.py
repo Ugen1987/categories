@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category
+from .models import Category, Product
 
 
 class RecursiveSerializer(serializers.Serializer):
@@ -48,4 +48,12 @@ class CategoryFlatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ('name',)
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    brand_title_and_brand_model_title = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = Product
+        fields = ('id', 'price', 'brand', 'brand_title_and_brand_model_title')
 
