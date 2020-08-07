@@ -43,5 +43,5 @@ class BrandModel(models.Model):
 
 
 class Sale(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='sales')
     sale_date = models.DateTimeField()
