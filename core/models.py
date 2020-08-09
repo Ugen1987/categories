@@ -1,4 +1,56 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+
+
+class Timestampable(models.Model):
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+    updated_at = models.DateTimeField('Дата редактирования', auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
+class User(AbstractBaseUser):
+    USER_TYPE_CHOICES = (
+        (1, 'admin'),
+        (2, 'customer'),
+    )
+    user_type = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES)
+    email = models.EmailField('Email', null=False, blank=False, unique=True)
+    first_name = models.CharField('Имя', max_length=255, blank=True)
+    last_name = models.CharField('Фамилия', max_length=255, blank=True)
+    is_active = models.BooleanField('Признак активности', default=False)
+
+    USERNAME_FIELD = 'email'
+
+    objects = BaseUserManager()
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        ordering = ('last_name', 'first_name')
+
+    def __str__(self):
+        return f'{self.last_name} {self.first_name} '
+
+
+class Album(models.Model):
+    created_by = models.ForeignKey('User', on_delete=models.CASCADE)
+    album_name = models.CharField(max_length=100)
+    artist = models.CharField(max_length=100)
+
+
+class Track(models.Model):
+    album = models.ForeignKey(Album, related_name='tracks', on_delete=models.CASCADE)
+    order = models.IntegerField()
+    title = models.CharField(max_length=100)
+    duration = models.IntegerField()
+
+    class Meta:
+        unique_together = ['album', 'order']
+        ordering = ['order']
+
+    def __str__(self):
+        return '%d: %s' % (self.order, self.title)
 
 
 class Category(models.Model):
