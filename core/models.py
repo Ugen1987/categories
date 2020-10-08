@@ -64,6 +64,19 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    def get_all_children(self, container=None, include_self=False):
+        if container is None:
+            if include_self:
+                container = [self]
+            else:
+                container = []
+        result = container
+        for child in self.children.all():
+            result.append(child)
+            if child.children.count() > 0:
+                child.get_all_children(result)
+        return result
+
 
 class Product(models.Model):
     brand = models.ForeignKey('Brand', on_delete=models.CASCADE)
